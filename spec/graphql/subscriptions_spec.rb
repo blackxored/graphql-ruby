@@ -133,7 +133,7 @@ class InMemoryBackend
   Schema.get_field("Subscription", "myEvent").subscription_scope = :me
 end
 
-if rails_should_be_installed? && defined?(GlobalID)
+if defined?(GlobalID)
   GlobalID.app = "graphql-ruby-test"
 
   class GlobalIDUser
@@ -308,7 +308,7 @@ describe GraphQL::Subscriptions do
       assert_equal [3], deliveries["3"].map { |d| d["data"]["myEvent"]["int"] }
     end
 
-    if rails_should_be_installed? && defined?(GlobalID)
+    if defined?(GlobalID)
       it "allows complex object subscription scopes" do
         query_str = <<-GRAPHQL
           subscription($type: PayloadType) {
@@ -382,6 +382,13 @@ describe GraphQL::Subscriptions do
   describe "implementation" do
     it "is initialized with keywords" do
       assert_equal 123, schema.subscriptions.extra
+    end
+  end
+
+  describe "#build_id" do
+    it "returns a unique ID string" do
+      assert_instance_of String, schema.subscriptions.build_id
+      refute_equal schema.subscriptions.build_id, schema.subscriptions.build_id
     end
   end
 end
